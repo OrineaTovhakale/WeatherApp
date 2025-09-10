@@ -3,6 +3,7 @@ import SearchBar from '../components/SearchBar';
 import WeatherCard from '../components/WeatherCard';
 import { getCurrentWeather, getForecast, getLocationByName } from '../utils/weatherApi';
 import ThemeToggle from '../components/ThemeToggle';
+import LocationList from '../components/LocationList';
 
 const Home = () => {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
@@ -11,7 +12,15 @@ const Home = () => {
   const [forecast, setForecast] = useState<any>(null);
   const [units, setUnits] = useState<'metric' | 'imperial'>('metric');
   const [forecastType, setForecastType] = useState<'hourly' | 'daily'>('hourly');
+  const [savedLocations, setSavedLocations] = useState<string[]>([]);
 
+  // Load saved locations from localStorage on mount
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('locations') || '[]');
+    setSavedLocations(saved);
+  }, []);
+
+  // Get geolocation on first load
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -22,6 +31,7 @@ const Home = () => {
     }
   }, []);
 
+  // Fetch weather when location, units, or forecast type changes
   useEffect(() => {
     const fetchWeather = async () => {
       if (location) {
@@ -39,11 +49,26 @@ const Home = () => {
     fetchWeather();
   }, [location, units, forecastType]);
 
+  const addLocation = (loc: string) => {
+    if (!savedLocations.includes(loc)) {
+      const newList = [...savedLocations, loc];
+      setSavedLocations(newList);
+      localStorage.setItem('locations', JSON.stringify(newList));
+    }
+  };
+
+  const deleteLocation = (loc: string) => {
+    const newList = savedLocations.filter((l) => l !== loc);
+    setSavedLocations(newList);
+    localStorage.setItem('locations', JSON.stringify(newList));
+  };
+
   const handleSearch = async (query: string) => {
     try {
       const loc = await getLocationByName(query);
       setLocation(loc);
       setSearchedLocation(query);
+      addLocation(query); // Save searched location
     } catch (err) {
       console.error('Search error:', err);
     }
@@ -73,6 +98,15 @@ const Home = () => {
           Searched: {searchedLocation}
         </p>
       )}
+
+      {/* Saved Locations */}
+      <div className="mt-6 w-full max-w-3xl">
+        <LocationList
+          locations={savedLocations}
+          onSelect={handleSearch}
+          onDelete={deleteLocation}
+        />
+      </div>
 
       {/* Weather data display */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 w-full max-w-5xl">
