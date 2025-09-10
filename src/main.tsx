@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 import AppProvider from './context/AppContext.tsx'
+import { useEffect } from 'react';
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -14,3 +16,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </AppProvider>
   </React.StrictMode>,
 )
+useEffect(() => {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('/service-worker.js');
+    // Request permission
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        // Subscribe and send to server if needed; for simplicity, local alert simulation
+      }
+    });
+  }
+}, []);

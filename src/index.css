@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+button:hover { cursor: pointer; }
+.hover\:bg-blue-600:hover { background-color: #2563eb; }
