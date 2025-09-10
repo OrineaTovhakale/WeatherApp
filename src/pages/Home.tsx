@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense, lazy } from 'react';
+import { useEffect, useState } from 'react';
 import { useContext } from 'react';
 import SearchBar from '../components/SearchBar';
 import WeatherCard from '../components/WeatherCard';
@@ -103,7 +103,10 @@ const Home = () => {
           Switch to {units === 'metric' ? 'F' : 'C'}
         </button>
       </div>
-      <LocationList locations={savedLocations} onSelect={handleSearch} onDelete={deleteLocation} />
+      <div className="mt-8 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Saved Locations</h2>
+        <LocationList locations={savedLocations} onSelect={handleSearch} onDelete={deleteLocation} />
+      </div>
     </div>
   );
 };
