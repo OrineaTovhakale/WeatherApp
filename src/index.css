@@ -1,4 +1,14 @@
 @import "tailwindcss";
 
+
+@layer base {
+  html {
+    @apply transition-colors duration-300; /* Smooth theme transitions */
+  }
+  html.dark {
+    @apply bg-gray-900; /* Ensure dark mode applies to root */
+  }
+}
+
 button:hover { cursor: pointer; }
 .hover\:bg-blue-600:hover { background-color: #2563eb; }

@@ -87,19 +87,25 @@ const Home = () => {
       <div className="flex justify-end w-full max-w-3xl">
         <ThemeToggle />
       </div>
-      <h1 className="text-4xl font-bold text-white mb-8">Weather Dashboard</h1>
+      <h1 className="text-4xl font-bold text-white mb-8 sm:text-5xl">Weather Dashboard</h1>
       <SearchBar onSearch={handleSearch} />
-      {locationName && <p className="text-white mt-4">Current Location: {locationName}</p>}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      {locationName && <p className="text-white mt-4 text-lg sm:text-xl">Current Location: {locationName}</p>}
+      <div className="w-full max-w-4xl mt-8 space-y-6 sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
         {currentWeather && <WeatherCard data={currentWeather} type="current" units={units === 'metric' ? 'C' : 'F'} />}
-        {forecast && forecast.list.map((item: any, idx: number) => (
-          <WeatherCard key={idx} data={item} type={forecastType} units={units === 'metric' ? 'C' : 'F'} />
-        ))}
+        {forecast && (
+          <div className="sm:col-span-2 lg:col-span-2 flex overflow-x-auto sm:grid sm:grid-cols-2 gap-6 pb-4 sm:pb-0 snap-x snap-mandatory">
+            {forecast.list.map((item: any, idx: number) => (
+              <div key={idx} className="snap-start min-w-[80%] sm:min-w-0">
+                <WeatherCard data={item} type={forecastType} units={units === 'metric' ? 'C' : 'F'} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div className="mt-8 flex space-x-4">
-        <button onClick={() => setForecastType('hourly')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Hourly</button>
-        <button onClick={() => setForecastType('daily')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Daily</button>
-        <button onClick={() => setUnits(units === 'metric' ? 'imperial' : 'metric')} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+        <button onClick={() => setForecastType('hourly')} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm sm:text-base">Hourly</button>
+        <button onClick={() => setForecastType('daily')} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm sm:text-base">Daily</button>
+        <button onClick={() => setUnits(units === 'metric' ? 'imperial' : 'metric')} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm sm:text-base">
           Switch to {units === 'metric' ? 'F' : 'C'}
         </button>
       </div>
