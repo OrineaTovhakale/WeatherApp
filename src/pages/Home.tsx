@@ -11,7 +11,6 @@ const Home = () => {
   const { units, setUnits } = useContext(AppContext)!;
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [locationName, setLocationName] = useState<string>('');
-  const [searchedLocation, setSearchedLocation] = useState<string>('');
   const [currentWeather, setCurrentWeather] = useState<any>(null);
   const [forecast, setForecast] = useState<any>(null);
   const [forecastType, setForecastType] = useState<'hourly' | 'daily'>('hourly');
@@ -60,14 +59,12 @@ const Home = () => {
     try {
       const loc = await getLocationByName(query);
       setLocation(loc);
-      setSearchedLocation(query);
       addLocation(query);
     } catch (err) {
       console.error('Search error:', err);
       // TODO: Show user notification
     }
   };
-
   const addLocation = (loc: string) => {
     if (!savedLocations.includes(loc)) {
       const newList = [...savedLocations, loc];
