@@ -20,7 +20,7 @@ const isSevereWeather = (weather: CurrentWeather): boolean => {
 };
 
 const Home: React.FC = () => {
-  const { units, setUnits, savedLocations, addLocation, removeLocation } = useAppContext();
+  const { units, setUnits, savedLocations, addLocation, removeLocation, theme } = useAppContext();
   const [activeLocation, setActiveLocation] = useState<SavedLocation | null>(null);
   const [currentWeather, setCurrentWeather] = useState<CurrentWeather | null>(null);
   const [forecast, setForecast] = useState<ForecastResponse | null>(null);
@@ -84,6 +84,7 @@ const Home: React.FC = () => {
       const loc = await getLocationByName(query);
       addLocation(loc);
       fetchWeatherForLocation(loc);
+      showToast(`Showing weather for ${loc.name}${loc.country ? ', ' + loc.country : ''}`, 'success');
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Location not found.', 'error');
     } finally {
@@ -97,16 +98,16 @@ const Home: React.FC = () => {
   const conditionCategory = currentWeather
     ? getConditionCategory(currentWeather.weather[0].id, isDaytime)
     : 'clear-day';
-  const theme = getConditionTheme(conditionCategory);
+  const theme_css = getConditionTheme(conditionCategory, theme === 'dark');
   const getForecastLabel = (item: { dt: number }) =>
     forecastType === 'hourly' ? formatHour(item.dt) : formatDay(item.dt);
 
   return (
-    <div style={{ minHeight: '100vh', background: theme.bg, transition: 'background var(--transition-slow)', fontFamily: 'var(--font-display)', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: theme_css.bg, transition: 'background var(--transition-slow)', fontFamily: 'var(--font-display)', position: 'relative', overflow: 'hidden' }}>
       {/* Atmospheric bg circles */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '600px', height: '600px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
-        <div style={{ position: 'absolute', bottom: '-30%', left: '-15%', width: '800px', height: '800px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
+        <div className="wx-bg-circle" style={{ position: 'absolute', top: '-20%', right: '-10%', width: '600px', height: '600px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+        <div className="wx-bg-circle" style={{ position: 'absolute', bottom: '-30%', left: '-15%', width: '800px', height: '800px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto', padding: 'clamp(1rem, 4vw, 2rem)' }}>
@@ -114,7 +115,13 @@ const Home: React.FC = () => {
         {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '1.5rem' }}>🌤</span>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
             <h1 style={{ color: '#fff', fontSize: 'clamp(1rem, 3vw, 1.3rem)', fontWeight: 700, letterSpacing: '-0.01em' }}>Weather</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -134,7 +141,8 @@ const Home: React.FC = () => {
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.25)'; }}
               onMouseLeave={e => { if (!isLocationsOpen) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.15)'; }}
             >
-              📍 <span className="hide-mobile">Saved</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span className="hide-mobile">Saved</span>
               {savedLocations.length > 0 && (
                 <span style={{ background: 'rgba(255,255,255,0.3)', borderRadius: '999px', padding: '1px 7px', fontSize: '0.75rem' }}>{savedLocations.length}</span>
               )}
@@ -186,7 +194,13 @@ const Home: React.FC = () => {
                   onMouseEnter={e => { if (forecastType !== type) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.18)'; }}
                   onMouseLeave={e => { if (forecastType !== type) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)'; }}
                 >
-                  {type === 'hourly' ? '⏱ Hourly' : '📅 Daily'}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {type === 'hourly'
+                      ? <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>
+                      : <><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>
+                    }
+                  </svg>
+                  {type === 'hourly' ? 'Hourly' : 'Daily'}
                 </button>
               ))}
             </div>
@@ -204,7 +218,13 @@ const Home: React.FC = () => {
           </>
         ) : (
           <div className="glass" style={{ padding: '4rem 2rem', textAlign: 'center', color: '#fff' }}>
-            <p style={{ fontSize: '4rem', marginBottom: '1rem' }}>🌍</p>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', opacity: 0.6 }}>
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            </div>
             <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '8px' }}>No weather data yet</h2>
             <p style={{ opacity: 0.7, fontSize: '0.9rem', lineHeight: 1.6 }}>Allow location access or search for a city above to get started.</p>
           </div>
