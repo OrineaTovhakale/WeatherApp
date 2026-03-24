@@ -74,6 +74,32 @@ body { font-family: var(--font-display); min-height: 100vh; overflow-x: hidden; 
 .stagger > *:nth-child(7) { animation-delay: 480ms; }
 .stagger > *:nth-child(8) { animation-delay: 560ms; }
 
+/* ─── Dark mode — deeper glass, darker shadows ── */
+html.dark {
+  --glass-bg:     rgba(0, 0, 0, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode dims the atmospheric overlay circles */
+html.dark .wx-bg-circle {
+  opacity: 0.3;
+}
+
+/* Light mode boosts the overlay circles */
+html:not(.dark) .wx-bg-circle {
+  opacity: 0.08;
+}
+
+/* Dark mode search bar */
+html.dark input::placeholder { color: rgba(255,255,255,0.4); }
+html:not(.dark) input::placeholder { color: rgba(255,255,255,0.6); }
+
+/* ─── Smooth theme transition ─────────────── */
+*, *::before, *::after {
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
 /* ─── Scrollbar ───────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
