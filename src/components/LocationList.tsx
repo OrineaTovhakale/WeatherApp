@@ -17,7 +17,11 @@ const LocationList: React.FC<LocationListProps> = ({
   if (locations.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '1.5rem', opacity: 0.6, color: '#fff', fontSize: '0.875rem' }}>
-        <p style={{ fontSize: '1.5rem', marginBottom: '8px' }}>📍</p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', opacity: 0.5 }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
         <p>No saved locations yet.</p>
         <p style={{ fontSize: '0.78rem', marginTop: '4px' }}>Search a city to save it.</p>
       </div>
@@ -54,7 +58,7 @@ const LocationList: React.FC<LocationListProps> = ({
                 display: 'flex', alignItems: 'center', gap: '8px',
               }}
             >
-              <span style={{ opacity: 0.7, fontSize: '0.85rem' }}>📍</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6, flexShrink: 0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span>{loc.name}</span>
               {loc.country && (
                 <span style={{ fontSize: '0.75rem', opacity: 0.6, fontWeight: 400 }}>{loc.country}</span>
